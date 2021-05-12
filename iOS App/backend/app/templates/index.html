@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+        <h1>Hi, {{ user.username }}!</h1>
+        <h2> Your setlists: </h2>
+        {% for post in posts %}
+        <div><p>{{ post.body }} {{ post.id }}: <b>{{ post.status }}</b></p></div>
+        {% endfor %}
+        {% endblock %}
