@@ -7,6 +7,8 @@ $   pip install flask-wtf
 $   pip install flask-sqlalchemy
 $   pip install flask-migrate
 $   pip install flask-login
+$   pip install babel
+$   pip install sqlalchemy-utils
 
 ## Run virtual environment
 $   python3 -m venv venv               // *only run this once!*
@@ -26,20 +28,25 @@ $   flask db init
 $   flask db migrate -m "users table"
 $   flask db upgrade
 
+## Install sqlalchemy-utils for database
+$   git clone git://github.com/kvesteri/sqlalchemy-utils.git
+$   cd sqlalchemy-utils
+$   pip install -e .
+
 ## Create new user
 $   flask shell
-`>>> u = User(username='john', email='john@example.com')`       // add new user
-`>>> u.set_password('pass1')`
-`>>> db.session.add(u)`
+>>> u = User(username='john', email='john@example.com')       // add new user
+>>> u.set_password('pass1')
+>>> db.session.add(u)
 
-`>>> for u in users:`                 //delete all users in one go
+>>> for u in users:                 //delete all users in one go
         db.session.delete(u)
 
-`>>> db.session.commit()`
+>>> db.session.commit()
 
 ## Imports before running Python / Flask Shell
-`>>> from loginpage import app`
-`>>> from app.models import User, Post`
+>>> from loginpage import app
+>>> from app.models import User, Post
 
 # Git commands
 git status
