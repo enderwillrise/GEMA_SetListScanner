@@ -1,6 +1,11 @@
 # Cheatsheet
 
-## Install packages
+# Quick set-up
+## 1. Run virtual environment
+$   python3 -m venv venv               #*only run this once!*
+$   source venv/bin/activate           #*activate venv*
+
+## 2. Install packages
 $   pip install flask
 $   pip install python-dotenv
 $   pip install flask-wtf
@@ -8,47 +13,59 @@ $   pip install flask-sqlalchemy
 $   pip install flask-migrate
 $   pip install flask-login
 $   pip install babel
-$   pip install sqlalchemy-utils
+$   pip install sqlalchemy-utils       //for country field
+$   pip install pandas                 //for db mass upload from csv to db
 
-## Run virtual environment
-$   python3 -m venv venv               // *only run this once!*
-$   source venv/bin/activate            // *activate venv*
-
-## Import a flask and run test
+## 3. Import a flask and run test
 >>>> import flask
 $   export FLASK_APP=loginpage.py
 $   flask run
 
-## Flask configurations
+## 4. Flask configurations
 $   FLASK_APP = loginpage.py
 $   FLASK_ENV = development
 
-## Create database
+## 5. Create database
 $   flask db init
-$   flask db migrate -m "users table"
+$   flask db migrate -m "update description e.g. users table"
 $   flask db upgrade
 
-## Install sqlalchemy-utils for database
+## 6. Install sqlalchemy-utils for database
 $   git clone git://github.com/kvesteri/sqlalchemy-utils.git
 $   cd sqlalchemy-utils
 $   pip install -e .
 
-## Create new user
+## 7(a). Upload mock User.csv
+Update file name in code "data = pd.read_csv (r'_/Users/leejiahui/loginpage/User.csv_')"
+$   python massdb.py
+
+## 7(b). (Alternative) Create new user - CLI method
 $   flask shell
->>> u = User(username='john', email='john@example.com')       // add new user
+>>> u = User(username='john', email='john@example.com')       //add new user
 >>> u.set_password('pass1')
 >>> db.session.add(u)
 
->>> for u in users:                 //delete all users in one go
-        db.session.delete(u)
-
->>> db.session.commit()
-
-## Imports before running Python / Flask Shell
+## 8. Imports before running Python / Flask Shell
 >>> from loginpage import app
->>> from app.models import User, Post
+>>> from app.models import User, Setlist, ... _(Include the classes you need)_
+>>> from app import db
 
-# Git commands
+## 9. Verify users created in db
+>>> users = User.query.all()
+>>> for u in users:
+...     print(u.id,u.username,u.email)
+
+>>> for u in users:                 //delete all users in one go
+...     db.session.delete(u)
+
+>>> db.session.commit()            //commit changes before exiting
+
+## 10. Run flask
+$   flask run
+_mock user: user1, password: pass1_
+
+# Quick access
+## Git commands
 git status
 git add -name-
 git commit -m "description"
