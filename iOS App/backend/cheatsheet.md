@@ -30,16 +30,20 @@ $   flask db init
 $   flask db migrate -m "update description e.g. users table"
 $   flask db upgrade
 
-! ## 6. Install sqlalchemy-utils for database
-$   git clone git://github.com/kvesteri/sqlalchemy-utils.git
-$   cd sqlalchemy-utils
-$   pip install -e .
-
-## 7(a). Upload mock User.csv
-Update file name in code "data = pd.read_csv (r'_/Users/leejiahui/loginpage/User.csv_')"
+## 6(a). Upload mock User.csv
+Update file name in code "csv_file_path = '_/Users/leejiahui/loginpage/User.csv_'"
 $   python massdb.py
+$   flask db migrate -m "update db or any description"
+$   flask db upgrade  #try "flask db stamp head" before upgrade if error
 
-## 7(b). (Alternative) Create new user - CLI method
+>>> users = User.query.all()
+>>> for u in users:
+...     u.set.password('haha')
+...
+>>> db.session.add(u)
+>>> db.session.commit()
+
+## 6(b). (Alternative) Create new user - CLI method
 $   flask shell
 >>> u = User(username='john', email='john@example.com')       //add new user
 >>> u.set_password('haha')
