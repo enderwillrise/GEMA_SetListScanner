@@ -12,8 +12,8 @@ $   pip install flask-wtf
 $   pip install flask-sqlalchemy
 $   pip install flask-migrate
 $   pip install flask-login
-$   pip install babel
-$   pip install sqlalchemy-utils       //for country field
+! $   pip install babel
+! $   pip install sqlalchemy-utils       //for country field
 $   pip install pandas                 //for db mass upload from csv to db
 
 ## 3. Import a flask and run test
@@ -30,7 +30,7 @@ $   flask db init
 $   flask db migrate -m "update description e.g. users table"
 $   flask db upgrade
 
-## 6. Install sqlalchemy-utils for database
+! ## 6. Install sqlalchemy-utils for database
 $   git clone git://github.com/kvesteri/sqlalchemy-utils.git
 $   cd sqlalchemy-utils
 $   pip install -e .
@@ -42,8 +42,9 @@ $   python massdb.py
 ## 7(b). (Alternative) Create new user - CLI method
 $   flask shell
 >>> u = User(username='john', email='john@example.com')       //add new user
->>> u.set_password('pass1')
+>>> u.set_password('haha')
 >>> db.session.add(u)
+>>> db.session.commit()
 
 ## 8. Imports before running Python / Flask Shell
 >>> from loginpage import app
@@ -62,7 +63,7 @@ $   flask shell
 
 ## 10. Run flask
 $   flask run
-_mock user: user1, password: pass1_
+_mock user: user1, password: haha_
 
 # Quick access
 ## Git commands
@@ -79,3 +80,7 @@ from: can't read /var/mail/app
 $ flask shell 
 NameError: name 'User' is not defined
 > name of folder "loginpage" should not be same as name of python file "loginpage1", flask shell will not know which to recognise
+
+check tables in db
+for t in db.metadata.tables.items():
+        print(t)

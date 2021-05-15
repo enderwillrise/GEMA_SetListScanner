@@ -2,7 +2,6 @@ from datetime import datetime
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from sqlalchemy_utils import CountryType, Country
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -12,11 +11,12 @@ def load_user(id):
     return User.query.get(int(id))
 
 class User(UserMixin, db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
     posts = db.relationship('Setlist', backref='author', lazy='dynamic')
+    password_hash = db.Column(db.String(128))
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -26,6 +26,9 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def init_db():
+        db.create_all()
 
 class Setlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,21 +53,20 @@ class Event(db.Model):
      def __repr__(self):
         return '<Event {}>'.format(self.eventName)
 
-class ProgrammeManager(db.Model,Base):
+class ProgrammeManager(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lastName = db.Column(db.String(20))
     firstName = db.Column(db.String(20))
-    country = db.Column(CountryType)
+
 
     def __repr__(self):
         return '<Manager {}>'.format(self.firstName)
 
-class Organiser(db.Model,Base):
+class Organiser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     lastName = db.Column(db.String(20))
     firstName = db.Column(db.String(20))
     ort = db.Column(db.String(20))
-    country = db.Column(CountryType)
 
     def __repr__(self):
         return '<Organiser {}>'.format(self.firstName)
