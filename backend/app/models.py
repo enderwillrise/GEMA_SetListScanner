@@ -2,6 +2,8 @@ from datetime import datetime
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from sqlalchemy_utils import CountryType, Country
+from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -31,6 +33,7 @@ class User(UserMixin, db.Model):
         db.create_all()
 
 class Setlist(db.Model):
+    __tablename__ = 'setlist'
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
     status = db.Column(db.String(10))
@@ -40,7 +43,8 @@ class Setlist(db.Model):
     def __repr__(self):
         return '<Setlist {}>'.format(self.id)
 
-class Event(db.Model):           
+class Event(db.Model, Base): 
+     __tablename__ = 'event'          
      id = db.Column(db.Integer, primary_key=True)
      date = db.Column(db.Date, default=datetime.utcnow)
      startTime = db.Column(db.Time)
@@ -48,12 +52,14 @@ class Event(db.Model):
      eventName = db.Column(db.String(100))
      eventVenueName = db.Column(db.String(100))
      eventVenueAddress = db.Column(db.String(100))
-     eventVenueOrt = db.Column(db.String(100))
-     
+     eventVenueCity = db.Column(db.String(100))
+     country = db.Column(CountryType)
+
      def __repr__(self):
         return '<Event {}>'.format(self.eventName)
 
 class ProgrammeManager(db.Model):
+    __tablename__ = 'manager'
     id = db.Column(db.Integer, primary_key=True)
     lastName = db.Column(db.String(20))
     firstName = db.Column(db.String(20))
@@ -62,24 +68,36 @@ class ProgrammeManager(db.Model):
     def __repr__(self):
         return '<Manager {}>'.format(self.firstName)
 
-class Organiser(db.Model):
+class Organiser(db.Model, Base):
+    __tablename__ = 'organiser'
     id = db.Column(db.Integer, primary_key=True)
     lastName = db.Column(db.String(20))
     firstName = db.Column(db.String(20))
-    ort = db.Column(db.String(20))
+    city = db.Column(db.String(20))
+    country = db.Column(CountryType)
 
     def __repr__(self):
         return '<Organiser {}>'.format(self.firstName)
 
-class Interpreter(db.Model):
+class Interpreter(db.Model, Base):
+    perfType = [
+        (u'Sole-band-ensemble', u'Sole band/ensemble'),
+        (u'Several-equal-bands-artists', u'Several equal bands/artists'),
+        (u'Opening-act', u'Opening act'),
+        (u'Main-act', u'Main act'),
+        (u'DJ-live-act', u'DJ live act'),
+        (u'Stage-theatre-performance', u'Stage/theatre performance')
+    ]
+    __tablename__ = 'interpreter'
     id = db.Column(db.Integer, primary_key=True)
-    performanceType = db.Column(db.Enum('Sole band/ensemble','Several equal bands/artists','Opening act','Main act','DJ live act', 'Stage/theatre performance'))
+    performanceType = db.Column(ChoiceType(perfType))
     interpreterName = db.Column(db.String(50))
 
     def __repr__(self):
         return '<Interpreter {}>'.format(self.interpreterName)
 
 class Song(db.Model):
+    __tablename__ = 'song'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(60))
     oneComposer = db.Column('yes',db.Boolean(), nullable=True)

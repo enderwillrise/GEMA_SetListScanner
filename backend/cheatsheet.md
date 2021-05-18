@@ -12,8 +12,8 @@ $   pip install flask-wtf
 $   pip install flask-sqlalchemy
 $   pip install flask-migrate
 $   pip install flask-login
-! $   pip install babel
-! $   pip install sqlalchemy-utils       //for country field
+$   pip install babel
+$   pip install sqlalchemy-utils       //for country field
 $   pip install pandas                 //for db mass upload from csv to db
 
 ## 3. Import a flask and run test
