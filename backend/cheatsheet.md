@@ -19,11 +19,11 @@ $   pip install flask-uploads
 
 ## 3. Import a flask and run test
 >>>> import flask
-$   export FLASK_APP=loginpage.py
+$   export FLASK_APP=backend1.py
 $   flask run
 
 ## 4. Flask configurations
-$   FLASK_APP = loginpage.py
+$   FLASK_APP = backend1.py
 $   FLASK_ENV = development
 
 ## 5. Create database
@@ -32,7 +32,7 @@ $   flask db migrate -m "update description e.g. users table"
 $   flask db upgrade
 
 ## 6(a). Upload mock User.csv
-Update file name in code "csv_file_path = '_/Users/leejiahui/loginpage/User.csv_'"
+Update filepath in massdb.py code "csv_file_path = '_/Users/leejiahui/GEMA_SetlistScanner/Backend/User.csv_'"
 $   python massdb.py
 $   flask db migrate -m "update db or any description"
 $   flask db upgrade  #try "flask db stamp head" before upgrade if error
@@ -51,8 +51,7 @@ $   flask shell
 >>> db.session.add(u)
 >>> db.session.commit()
 
-## 8. Imports before running Python / Flask Shell
->>> from loginpage import app
+## 8. Imports before running Python / Flask Shell (If needed)
 >>> from app.models import User, Setlist, ... _(Include the classes you need)_
 >>> from app import db
 
@@ -69,6 +68,15 @@ $   flask shell
 ## 10. Run flask
 $   flask run
 _mock user: user1, password: haha_
+
+## 11. If uploading file
+- Create a folder "uploads" under ./backend 
+- Create ocr script based on Abdullah's instructions
+- Instead of print(ocr_core(file)), use this loop:
+        dir = '/Users/leejiahui/GEMA_SetListScanner/backend/uploads'
+        for filename in os.listdir(dir):
+                fullname = os.path.join(dir, filename)
+                print(ocr_core(fullname))
 
 # Quick access
 ## Git commands

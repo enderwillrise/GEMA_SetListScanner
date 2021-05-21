@@ -2,7 +2,7 @@ import pandas as pd
 from app import db
 
 engine = db.get_engine()
-csv_file_path = '/Users/leejiahui/loginpage/User.csv'
+csv_file_path = '/Users/leejiahui/GEMA_SetlistScanner/Backend/User.csv'
 
 # Read CSV with Pandas
 with open(csv_file_path, 'r') as file:
