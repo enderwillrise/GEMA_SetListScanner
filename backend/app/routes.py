@@ -1,11 +1,15 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import app
-from app.forms import LoginForm
+from app.forms import LoginForm, UploadForm
 from flask_login import current_user, login_user
 from app.models import User
 from flask_login import logout_user, login_required
 from werkzeug.urls import url_parse
+from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 
+photos = UploadSet('photos', IMAGES)
+configure_uploads(app, photos)
+patch_request_class(app)
 
 @app.route('/')
 @app.route('/index')
@@ -44,6 +48,16 @@ def login():
             next_page = url_for('index')
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)    
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    form = UploadForm()
+    if form.validate_on_submit():
+        filename = photos.save(form.photo.data)
+        file_url = photos.url(filename)
+    else:
+        file_url = None
+    return render_template('upload.html', form=form, file_url=file_url)
 
 @app.route('/logout')
 def logout():
