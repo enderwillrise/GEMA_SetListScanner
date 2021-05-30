@@ -5,6 +5,7 @@ from flask_login import UserMixin
 from sqlalchemy_utils import CountryType, Country
 from sqlalchemy_utils.types.choice import ChoiceType
 from sqlalchemy.ext.declarative import declarative_base
+import uuid
 
 Base = declarative_base()
 
@@ -17,7 +18,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    posts = db.relationship('Setlist', backref='author', lazy='dynamic')
+    setlists = db.relationship('Setlists', backref='author', lazy='dynamic')
     password_hash = db.Column(db.String(128))
 
     def __repr__(self):
@@ -39,6 +40,7 @@ class Setlist(db.Model):
     status = db.Column(db.String(10))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 
     def __repr__(self):
         return '<Setlist {}>'.format(self.id)
@@ -54,6 +56,7 @@ class Event(db.Model, Base):
      eventVenueAddress = db.Column(db.String(100))
      eventVenueCity = db.Column(db.String(100))
      country = db.Column(CountryType)
+     setlist = db.relationship('Setlist', backref='linked_event', lazy='dynamic')
 
      def __repr__(self):
         return '<Event {}>'.format(self.eventName)
