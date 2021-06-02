@@ -105,3 +105,7 @@ class Song(db.Model):
     def __repr__(self):
         return '<Song {}>'.format(self.title)
 
+class OCROutput(db.Model):
+    __tablename__ = 'ocr'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(999))

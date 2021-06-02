@@ -1,12 +1,13 @@
 from flask import render_template, flash, redirect, url_for, request, jsonify, make_response, session
 from app import app, db
 from app.forms import UploadForm, LoginForm
-from app.models import User
+from app.models import User, OCROutput
 from flask_login import logout_user
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 import jwt
 import datetime
 from functools import wraps
+import tesser
 
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
@@ -86,6 +87,11 @@ def upload(current_user):
     else:
         file_url = None
     return render_template('upload.html', form=form, file_url=file_url)
+
+@app.route('/process', methods=['GET','POST'])
+def process():
+    texts = {  'content': OCROutput.content }
+    return render_template('process.html')
 
 @app.route('/logout')
 def logout():

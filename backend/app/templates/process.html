@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Output</h1> 
+{% for text in texts %}
+        <div>{{ text.content }} </div>
+        {% endblock %}
