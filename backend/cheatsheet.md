@@ -98,3 +98,35 @@ NameError: name 'User' is not defined
 check tables in db
 for t in db.metadata.tables.items():
         print(t)
+
+"sqlalchemy_utils" is not defined
+in migrations > mako
+import sqlalchemy_utils
+
+unexpected argument length = 255 for ChoiceType
+in migrations > env.py
+
+Sole_band_ensemble = u'1'
+Several_equal_bands_artists = u'2'
+Opening_act = u'3'
+Main_act = u'4'
+DJ_live_act = u'5'
+Stage_theatre_performance = u'6'
+
+perfType = [
+        (u'Sole_band_ensemble', u'Sole band/ensemble'),
+        (u'Several_equal_bands_artists', u'Several equal bands/artists'),
+        (u'Opening_act', u'Opening act'),
+        (u'Main_act', u'Main act'),
+        (u'DJ_live_act', u'DJ live act'),
+        (u'Stage_theatre_performance', u'Stage/theatre performance')
+    ]
+
+def upgrade()
+...
+
+table Event already exists 
+go to models.py > copy and delete the entire "event" model
+db migrate -m "delete event" 
+db upgrade
+add back event model

@@ -1,6 +1,6 @@
-from flask import render_template, flash, redirect, url_for, request, jsonify, make_response
-from app import app
-from app.forms import UploadForm
+from flask import render_template, flash, redirect, url_for, request, jsonify, make_response, session
+from app import app, db
+from app.forms import UploadForm, LoginForm
 from app.models import User
 from flask_login import logout_user
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
@@ -12,31 +12,33 @@ photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 patch_request_class(app)
 
-def token_required(f):
+def token_required(f):                      #wrapper for token auth
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.args.get('token')
 
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
+        if 'x-access-token' in request.headers:         #check if there is a token in the headers
+           token = request.headers['x-access-token']
 
-        if not token:
+        if not token:                                   #if there is no token in the page
             return jsonify({'message': 'Token is missing!'}), 401
         
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-        except:
+        try:                                            #try to validate the token 
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])    # take the token + secret key
+            current_user = db.session.query(User).filter_by(username=data['user']).first()      # identify user based on username
+        except:                                                                            # unable to find user
             return jsonify({'message': 'Token is invalid!'}), 401
         
-        return f(*args, **kwargs)   #return f(current_user, *args, **kwargs)
+        return f(current_user, *args, **kwargs)   #return f(current_user, *args, **kwargs)
 
     return decorated
+
 
 @app.route('/')
 
 @app.route('/index')
 @token_required
-def index():
+def index(current_user):
     user = {'username': 'user'}
     posts = [
         {
@@ -61,22 +63,23 @@ def login():
     if not auth or not auth.username or not auth.password:
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm = "Login Required!"'})
 
-    user = User.query.filter_by(username=auth.username).first()
+    current_user = db.session.query(User).filter_by(username=auth.username).first()
 
-    if not user:
-            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm = "Login Required!"'})
+    if not current_user:
+        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm = "Login Required!"'})
 
-    if user.check_password(auth.password): 
+    if current_user.check_password(auth.password): 
         token = jwt.encode({'user': auth.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=2)}, app.config['SECRET_KEY'])
-        
-        return jsonify({'message': 'hello ' + user.username}, {'token': token})
-
-    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm = "Login Required!"'})
+          
+        return jsonify({'message': 'hello ' + current_user.username}, {'token': token})
+    
+    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm = "Login Required!"'})   
 
 @app.route('/upload', methods=['GET', 'POST'])
 @token_required
-def upload():
+def upload(current_user):
     form = UploadForm()
+
     if form.validate_on_submit():
         filename = photos.save(form.photo.data)
         file_url = photos.url(filename)
@@ -95,5 +98,5 @@ def unprotected():
 
 @app.route('/protected')
 @token_required
-def protected():
+def protected(current_user):
     return jsonify({'message' : 'This is only for people with valid tokens'})
