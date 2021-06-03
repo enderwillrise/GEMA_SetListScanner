@@ -87,46 +87,46 @@ git commit -m "description"
 git push
 
 # Troubleshooting errors
-from app import db
-from: can't read /var/mail/app
+! from app import db
+! from: can't read /var/mail/app
 > $ python // go into python mode first
 
-$ flask shell 
-NameError: name 'User' is not defined
-> name of folder "loginpage" should not be same as name of python file "loginpage1", flask shell will not know which to recognise
+! $ flask shell 
+! NameError: name 'User' is not defined
+name of folder "loginpage" should not be same as name of python file "loginpage1", flask shell will not know which to recognise
 
 check tables in db
 for t in db.metadata.tables.items():
         print(t)
 
-"sqlalchemy_utils" is not defined
+! "sqlalchemy_utils" is not defined
 in migrations > mako
 import sqlalchemy_utils
 
-unexpected argument length = 255 for ChoiceType
-in migrations > env.py
+! unexpected argument length = 255 for ChoiceType
+in migrations > env.py, paste this:
 
-Sole_band_ensemble = u'1'
-Several_equal_bands_artists = u'2'
-Opening_act = u'3'
-Main_act = u'4'
-DJ_live_act = u'5'
-Stage_theatre_performance = u'6'
+        Sole_band_ensemble = u'1'
+        Several_equal_bands_artists = u'2'
+        Opening_act = u'3'
+        Main_act = u'4'
+        DJ_live_act = u'5'
+        Stage_theatre_performance = u'6'
 
-perfType = [
-        (u'Sole_band_ensemble', u'Sole band/ensemble'),
-        (u'Several_equal_bands_artists', u'Several equal bands/artists'),
-        (u'Opening_act', u'Opening act'),
-        (u'Main_act', u'Main act'),
-        (u'DJ_live_act', u'DJ live act'),
-        (u'Stage_theatre_performance', u'Stage/theatre performance')
-    ]
+        perfType = [
+                (u'Sole_band_ensemble', u'Sole band/ensemble'),
+                (u'Several_equal_bands_artists', u'Several equal bands/artists'),
+                (u'Opening_act', u'Opening act'),
+                (u'Main_act', u'Main act'),
+                (u'DJ_live_act', u'DJ live act'),
+                (u'Stage_theatre_performance', u'Stage/theatre performance')
+        ]
 
-def upgrade()
-...
+        def upgrade()
+        ...
 
-table Event already exists 
+! table Event already exists 
 go to models.py > copy and delete the entire "event" model
-db migrate -m "delete event" 
-db upgrade
-add back event model
+        db migrate -m "delete event" 
+        db upgrade
+add back event model again after upgrade
