@@ -6,6 +6,7 @@ migrations
 
 app.db
 uploads
+lib
 
 .DS_Store
 package.json
