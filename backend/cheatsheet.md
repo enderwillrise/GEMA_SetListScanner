@@ -70,7 +70,7 @@ $   flask shell
 $   flask run
 _mock user: user1, password: haha_
 
-## 11. If uploading file
+## 11. If creating upload function
 - Create a folder "uploads" under ./backend 
 - Create ocr script based on Abdullah's instructions
 - Instead of print(ocr_core(file)), use this loop:
@@ -78,6 +78,12 @@ _mock user: user1, password: haha_
         for filename in os.listdir(dir):
                 fullname = os.path.join(dir, filename)
                 print(ocr_core(fullname))
+
+### 12. Init Google Cloud (For uploading picture)
+$   gcloud init
+
+## 13. Set google app credentials
+$   export GOOGLE_APPLICATION_CREDENTIALS="/Users/leejiahui/desktop/Projects/ssa-poc-194d-1ae027d7536d.json"
 
 # Quick access
 ## Git commands
@@ -89,19 +95,19 @@ git push
 # Troubleshooting errors
 ! from app import db
 ! from: can't read /var/mail/app
-> $ python // go into python mode first
+        $ python // go into python mode first
 
 ! $ flask shell 
 ! NameError: name 'User' is not defined
 name of folder "loginpage" should not be same as name of python file "loginpage1", flask shell will not know which to recognise
 
 check tables in db
-for t in db.metadata.tables.items():
-        print(t)
+        for t in db.metadata.tables.items():
+                print(t)
 
 ! "sqlalchemy_utils" is not defined
 in migrations > mako
-import sqlalchemy_utils
+        import sqlalchemy_utils
 
 ! unexpected argument length = 255 for ChoiceType
 in migrations > env.py, paste this:

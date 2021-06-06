@@ -7,7 +7,6 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_cl
 import jwt
 import datetime
 from functools import wraps
-import tesser
 
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
@@ -87,11 +86,6 @@ def upload(current_user):
     else:
         file_url = None
     return render_template('upload.html', form=form, file_url=file_url)
-
-@app.route('/process', methods=['GET','POST'])
-def process():
-    texts = {  'content': OCROutput.content }
-    return render_template('process.html')
 
 @app.route('/logout')
 def logout():
