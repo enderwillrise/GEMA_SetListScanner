@@ -28,5 +28,8 @@ class EventForm(FlaskForm):
      country = StringField('Country')
      submit = SubmitField('Next')
 
+class ProcessForm(FlaskForm):
+    submit = SubmitField('Process')
+    
 class CompleteForm(FlaskForm):
     submit = SubmitField('Complete')

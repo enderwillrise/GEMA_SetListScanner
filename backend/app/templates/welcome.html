@@ -2,10 +2,12 @@
 
 {% block content %}
 <div>
-        <h1>Welcome, 'user'!</h1>
+        <br>
+        <h1>Welcome!</h1>
         <h2> What are you doing today? </h2>
+        <body><div align = "center">
+        <br><a href="{{ url_for('event') }}">Create new setlist</a>
+        <br> <a href="{{ url_for('setlists') }}">Review my setlists</a>
+        <br> <a href="{{ url_for('event') }}">Check my profile</a> </body></div>
 
-        <li><a href="{{ url_for('event') }}">Create new setlist</a></li>
-        <li><a href="{{ url_for('setlists') }}">Review my setlists</a></li>
-        <li><a href="{{ url_for('event') }}">Check my profile</a></li>
         {% endblock %}
