@@ -7,6 +7,7 @@ from werkzeug.urls import url_parse
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 from tesser import ocr_core
 import os
+from blob import upload_blob
 
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
@@ -69,6 +70,11 @@ def upload():
     if form.validate_on_submit():
         filename = photos.save(form.photo.data)
         file_url = photos.url(filename)
+        
+        dir = '/Users/leejiahui/GEMA_SetListScanner/backend/uploads/'
+        for file in os.listdir(dir):
+            fullname = os.path.join(dir, file)
+            upload_blob("testing-upload-image-bucket", fullname , file)    
     else:
         file_url = None
     return render_template('upload.html', form=form, file_url=file_url)
@@ -97,6 +103,11 @@ def process():
         c = ocr_core(fullname) 
         d = c.splitlines() # split string into arrays
         e = [a for a in d if a.strip()]   # remove empty spaces
+        for i in e:                       # each item in array
+            f = OCROutput(content = i)   # store into database
+            db.session.add(f)
+            db.session.commit()    
+        os.remove(fullname)
 
     form = CompleteForm()
     if form.validate_on_submit():

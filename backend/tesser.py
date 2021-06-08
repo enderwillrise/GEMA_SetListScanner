@@ -15,14 +15,14 @@ def ocr_core(filename):
     text = pytesseract.image_to_string(Image.fromarray(filename))  # We'll use Pillow's Image class to open the image and pytesseract to detect the string in the image
     return text
 
-
-dir = '/Users/leejiahui/GEMA_SetListScanner/backend/uploads'
-for filename in os.listdir(dir):
-    fullname = os.path.join(dir, filename)
-    c = ocr_core(fullname) 
-    d = c.splitlines() # split string into arrays
-    e = [a for a in d if a.strip()]   # remove empty spaces
-    for i in e:                       # each item in array
-        f = OCROutput(content = i)   # store into database
-        db.session.add(f)
-        db.session.commit()    
+def ocr_save(c):
+    dir = '/Users/leejiahui/GEMA_SetListScanner/backend/uploads'
+    for filename in os.listdir(dir):
+        fullname = os.path.join(dir, filename)
+        c = ocr_core(fullname) 
+        d = c.splitlines() # split string into arrays
+        e = [a for a in d if a.strip()]   # remove empty spaces
+        for i in e:                       # each item in array
+            f = OCROutput(content = i)   # store into database
+            db.session.add(f)
+            db.session.commit()    
