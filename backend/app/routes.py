@@ -1,44 +1,22 @@
-from flask import render_template, flash, redirect, url_for, request, jsonify, make_response, session
+from flask import render_template, flash, redirect, url_for, request, jsonify, make_response, session, Response
 from app import app, db
-from app.forms import UploadForm, LoginForm
-from app.models import User, OCROutput
-from flask_login import logout_user
+from app.forms import UploadForm, LoginForm, EventForm, CompleteForm
+from app.models import User, OCROutput, Event
+from flask_login import logout_user, login_required, current_user, login_user
+from werkzeug.urls import url_parse
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
-import jwt
-import datetime
-from functools import wraps
+from tesser import ocr_core
+import os
 
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, photos)
 patch_request_class(app)
 
-def token_required(f):                      #wrapper for token auth
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.args.get('token')
-
-        if 'x-access-token' in request.headers:         #check if there is a token in the headers
-           token = request.headers['x-access-token']
-
-        if not token:                                   #if there is no token in the page
-            return jsonify({'message': 'Token is missing!'}), 401
-        
-        try:                                            #try to validate the token 
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])    # take the token + secret key
-            current_user = db.session.query(User).filter_by(username=data['user']).first()      # identify user based on username
-        except:                                                                            # unable to find user
-            return jsonify({'message': 'Token is invalid!'}), 401
-        
-        return f(current_user, *args, **kwargs)   #return f(current_user, *args, **kwargs)
-
-    return decorated
-
-
 @app.route('/')
 
 @app.route('/index')
-@token_required
-def index(current_user):
+@login_required
+def index():
     user = {'username': 'user'}
     posts = [
         {
@@ -58,26 +36,34 @@ def index(current_user):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    auth = request.authorization
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('welcome')
+        return redirect(next_page)
+    return render_template('login.html', title='Sign In', form=form)
 
-    if not auth or not auth.username or not auth.password:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm = "Login Required!"'})
+@app.route('/welcome', methods=['GET', 'POST'])
+@login_required
+def welcome():
+    return render_template('welcome.html')
 
-    current_user = db.session.query(User).filter_by(username=auth.username).first()
-
-    if not current_user:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm = "Login Required!"'})
-
-    if current_user.check_password(auth.password): 
-        token = jwt.encode({'user': auth.username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=2)}, app.config['SECRET_KEY'])
-          
-        return jsonify({'message': 'hello ' + current_user.username}, {'token': token})
-    
-    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm = "Login Required!"'})   
+@app.route('/setlists', methods=['GET', 'POST'])
+@login_required
+def setlists():
+    return render_template('setlists.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
-@token_required
-def upload(current_user):
+@login_required
+def upload():
     form = UploadForm()
 
     if form.validate_on_submit():
@@ -86,17 +72,44 @@ def upload(current_user):
     else:
         file_url = None
     return render_template('upload.html', form=form, file_url=file_url)
+    
+@app.route('/event', methods=['GET', 'POST'])
+@login_required
+def event():
+    form = EventForm()
+
+    if form.validate_on_submit():
+        event = Event(date=form.date.data, startTime=form.startTime.data, endTime=form.endTime.data, eventName=form.eventName.data,
+        eventVenueName=form.eventVenueName.data, eventVenueAddress=form.eventVenueAddress.data, eventVenueCity=form.eventVenueCity.data,
+        country=form.country.data)
+        db.session.add(event)
+        db.session.commit()
+
+        next_page = url_for('upload')
+        return redirect(next_page)
+    return render_template('event.html', form=form)
+
+@app.route('/process', methods=['GET','POST'])
+def process():
+    dir = '/Users/leejiahui/GEMA_SetListScanner/backend/uploads'
+    for filename in os.listdir(dir):
+        fullname = os.path.join(dir, filename)
+        c = ocr_core(fullname) 
+        d = c.splitlines() # split string into arrays
+        e = [a for a in d if a.strip()]   # remove empty spaces
+
+    form = CompleteForm()
+    if form.validate_on_submit():
+        next_page = url_for('complete')
+        return redirect(next_page)
+    return render_template('process.html', e=e, form=form)
+
+@app.route('/complete')
+def complete():
+
+    return render_template('complete.html')
 
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-@app.route('/unprotected')
-def unprotected():
-    return jsonify({'message': 'Anyone can view this!'})
-
-@app.route('/protected')
-@token_required
-def protected(current_user):
-    return jsonify({'message' : 'This is only for people with valid tokens'})

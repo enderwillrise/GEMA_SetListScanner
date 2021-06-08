@@ -25,4 +25,4 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
 dir = '/Users/leejiahui/GEMA_SetListScanner/backend/uploads/'
 for file in os.listdir(dir):
     filename = os.path.join(dir, file)
-    upload_blob("testing-upload-image-bucket", filename , "picture" )
+    upload_blob("testing-upload-image-bucket", filename , file )
